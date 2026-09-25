@@ -1,6 +1,6 @@
 FROM node:20-alpine AS frontend-builder
 
-COPY ./Frontend /app
+COPY ./client /app
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ RUN npm run build
 
 FROM node:20-alpine
 
-COPY ./Backend /app
+COPY ./server /app
 
 WORKDIR /app
 
