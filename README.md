@@ -142,4 +142,4 @@ GitHub: [@your-username](https://github.com/your-username)
 
 ## 📄 License
 
-This project is created for educational and development purposes.
+This project is created for educational and development purpose.
