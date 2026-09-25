@@ -1,0 +1,296 @@
+.voice-page {
+  min-height: calc(100vh - 76px);
+  padding: 55px 8%;
+  background: #f8fafc;
+}
+
+.voice-header {
+  text-align: center;
+  max-width: 750px;
+  margin: 0 auto 40px;
+}
+
+.voice-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.voice-header h1 {
+  margin: 18px 0 12px;
+  font-size: 44px;
+  color: #0f172a;
+}
+
+.voice-header p {
+  color: #64748b;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.voice-card {
+  max-width: 950px;
+  margin: auto;
+  padding: 35px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.voice-language-row {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 35px;
+}
+
+.voice-language {
+  flex: 1;
+}
+
+.voice-language label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.voice-language select {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: white;
+  font-size: 15px;
+  outline: none;
+}
+
+.voice-language select:focus {
+  border-color: #4f46e5;
+}
+
+.voice-swap {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.voice-swap:hover {
+  transform: rotate(180deg);
+}
+
+.voice-main {
+  text-align: center;
+  padding: 20px 0 35px;
+}
+
+.microphone {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mic-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4f46e5;
+  color: white;
+  font-size: 42px;
+  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.25);
+  transition: 0.3s;
+}
+
+.microphone:hover .mic-circle {
+  transform: scale(1.05);
+}
+
+.microphone.listening .mic-circle {
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 25px rgba(79, 70, 229, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+  }
+}
+
+.voice-main h2 {
+  margin: 20px 0 7px;
+  color: #0f172a;
+}
+
+.voice-main p {
+  color: #64748b;
+}
+
+.voice-error {
+  padding: 13px 16px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+  text-align: center;
+}
+
+.voice-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.voice-result-box {
+  min-height: 180px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.language-tag {
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: #e0e7ff;
+  color: #4338ca;
+  font-size: 11px;
+}
+
+.voice-text {
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.voice-text.translated {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.voice-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.translate-voice-btn,
+.speak-btn {
+  padding: 13px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.translate-voice-btn {
+  background: #4f46e5;
+  color: white;
+}
+
+.speak-btn {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.translate-voice-btn:disabled,
+.speak-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.voice-info {
+  max-width: 950px;
+  margin: 25px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  gap: 12px;
+  padding: 18px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+}
+
+.info-item > span {
+  font-size: 25px;
+}
+
+.info-item strong {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.info-item p {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+@media (max-width: 700px) {
+  .voice-page {
+    padding: 40px 5%;
+  }
+
+  .voice-header h1 {
+    font-size: 34px;
+  }
+
+  .voice-card {
+    padding: 22px;
+  }
+
+  .voice-results {
+    grid-template-columns: 1fr;
+  }
+
+  .voice-info {
+    grid-template-columns: 1fr;
+  }
+
+  .voice-language-row {
+    gap: 10px;
+  }
+
+  .voice-actions {
+    flex-direction: column;
+  }
+}
