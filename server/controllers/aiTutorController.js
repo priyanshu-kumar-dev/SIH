@@ -1,11 +1,11 @@
-const { askTutorAI } = require("../services/aiService");
+const { askTutorAI } = require("../services/tutorService");
 
 const askTutor = async (req, res) => {
   console.log("AI TUTOR API CALLED");
   console.log("BODY:", req.body);
 
   try {
-    const { question, language = "English" } = req.body;
+    const { question } = req.body;
 
     if (!question || !question.trim()) {
       return res.status(400).json({
@@ -14,12 +14,7 @@ const askTutor = async (req, res) => {
       });
     }
 
-    const answer = await askTutorAI(
-      question.trim(),
-      language
-    );
-
-    console.log("AI TUTOR ANSWER:", answer);
+    const answer = await askTutorAI(question.trim());
 
     return res.status(200).json({
       success: true,

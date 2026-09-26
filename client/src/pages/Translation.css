@@ -1,212 +1,348 @@
-
 .translation-page {
-  min-height: calc(100vh - 76px);
-  padding: 70px 8%;
-  background: #f8fafc;
+min-height: calc(100vh - 76px);
+padding: 60px 7%;
+background:
+radial-gradient(circle at 10% 10%, #eef2ff 0, transparent 30%),
+radial-gradient(circle at 90% 20%, #dbeafe 0, transparent 28%),
+linear-gradient(135deg, #f8fafc, #eef2ff);
 }
 
 .translation-header {
-  text-align: center;
-  max-width: 700px;
-  margin: auto;
+max-width: 800px;
+margin: 0 auto 42px;
+text-align: center;
 }
 
 .translation-header h1 {
-  font-size: 44px;
-  margin: 18px 0;
+margin: 0 0 15px;
+color: #0f172a;
+font-size: 50px;
+line-height: 1.1;
+letter-spacing: -2px;
 }
 
 .translation-header p {
-  color: #64748b;
-  font-size: 17px;
-  line-height: 1.6;
+max-width: 650px;
+margin: auto;
+color: #64748b;
+font-size: 17px;
+line-height: 1.7;
+}
+
+.translation-header::before {
+content: "🤖 AI POWERED TRANSLATION";
+display: inline-block;
+padding: 8px 16px;
+margin-bottom: 16px;
+border: 1px solid #c7d2fe;
+border-radius: 999px;
+background: rgba(255, 255, 255, 0.85);
+color: #4338ca;
+font-size: 12px;
+font-weight: 800;
+letter-spacing: 0.5px;
 }
 
 .translator-card {
-  max-width: 950px;
-  margin: 45px auto 25px;
-  padding: 30px;
-  background: white;
-  border-radius: 22px;
-  box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+max-width: 1050px;
+margin: auto;
+padding: 30px;
+background: rgba(255, 255, 255, 0.94);
+border: 1px solid #e2e8f0;
+border-radius: 28px;
+box-shadow:
+0 30px 80px rgba(15, 23, 42, 0.1),
+0 5px 20px rgba(79, 70, 229, 0.05);
+box-sizing: border-box;
 }
 
 .language-row {
-  display: flex;
-  align-items: end;
-  justify-content: center;
-  gap: 25px;
-  margin-bottom: 30px;
+display: grid;
+grid-template-columns: 1fr 65px 1fr;
+align-items: end;
+gap: 18px;
+margin-bottom: 28px;
 }
 
 .language-row > div {
-  flex: 1;
+min-width: 0;
 }
 
 .language-row label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 600;
+display: block;
+margin-bottom: 9px;
+color: #475569;
+font-size: 13px;
+font-weight: 800;
 }
 
 .language-row select {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  font-size: 15px;
-  background: white;
+width: 100%;
+padding: 15px 16px;
+border: 1px solid #cbd5e1;
+border-radius: 14px;
+outline: none;
+background: #ffffff;
+color: #0f172a;
+font-size: 15px;
+font-weight: 700;
+cursor: pointer;
+box-sizing: border-box;
+transition: 0.2s;
+}
+
+.language-row select:hover {
+border-color: #a5b4fc;
+}
+
+.language-row select:focus {
+border-color: #6366f1;
+box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
 .swap-btn {
-  width: 45px;
-  height: 45px;
-  border: none;
-  border-radius: 50%;
-  background: #eef2ff;
-  color: #4f46e5;
-  font-size: 22px;
+width: 52px;
+height: 52px;
+margin: 0 auto;
+border: 1px solid #c7d2fe;
+border-radius: 16px;
+background: #eef2ff;
+color: #4f46e5;
+font-size: 24px;
+font-weight: 700;
+cursor: pointer;
+transition: 0.25s;
+}
+
+.swap-btn:hover {
+background: #4f46e5;
+color: white;
+transform: rotate(180deg);
+box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
 .translation-boxes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
 }
 
 .text-box {
-  min-height: 220px;
-  padding: 20px;
-  border: 1px solid #e2e8f0;
-  border-radius: 15px;
-  background: #f8fafc;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+min-height: 250px;
+padding: 22px;
+box-sizing: border-box;
+border: 1px solid #e2e8f0;
+border-radius: 20px;
+background: #f8fafc;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+transition: 0.2s;
+}
+
+.text-box:first-child {
+background: linear-gradient(145deg, #f8fafc, #eef2ff);
+}
+
+.text-box:hover {
+border-color: #c7d2fe;
+box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.text-box:focus-within {
+border-color: #6366f1;
+box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
 }
 
 .text-box textarea {
-  width: 100%;
-  height: 160px;
-  border: none;
-  outline: none;
-  resize: none;
-  background: transparent;
-  font-size: 17px;
-  font-family: inherit;
+width: 100%;
+height: 180px;
+box-sizing: border-box;
+border: none;
+outline: none;
+resize: none;
+background: transparent;
+color: #0f172a;
+font-family: inherit;
+font-size: 18px;
+line-height: 1.7;
+}
+
+.text-box textarea::placeholder {
+color: #94a3b8;
 }
 
 .text-box-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding-top: 12px;
+border-top: 1px solid rgba(226, 232, 240, 0.7);
 }
 
 .text-box-footer span {
-  color: #94a3b8;
-  font-size: 12px;
+color: #94a3b8;
+font-size: 12px;
 }
 
 .clear-btn {
-  border: none;
-  background: transparent;
-  color: #4f46e5;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
+border: none;
+background: transparent;
+color: #4f46e5;
+font-size: 12px;
+font-weight: 800;
+cursor: pointer;
+}
+
+.clear-btn:hover {
+color: #3730a3;
 }
 
 .result-box {
-  color: #334155;
-  font-size: 17px;
-  line-height: 1.6;
+color: #334155;
+font-size: 18px;
+line-height: 1.7;
+white-space: pre-wrap;
+overflow-wrap: anywhere;
 }
 
 .translate-btn {
-  width: 100%;
-  margin-top: 25px;
-  padding: 15px;
-  border: none;
-  border-radius: 12px;
-  background: #4f46e5;
-  color: white;
-  font-size: 16px;
-  font-weight: 700;
+width: 100%;
+margin-top: 22px;
+padding: 16px 20px;
+border: none;
+border-radius: 15px;
+background: linear-gradient(135deg, #4f46e5, #6366f1);
+color: white;
+font-size: 16px;
+font-weight: 800;
+cursor: pointer;
+box-shadow: 0 10px 25px rgba(79, 70, 229, 0.22);
+transition: 0.2s;
+}
+
+.translate-btn:hover:not(:disabled) {
+transform: translateY(-2px);
+box-shadow: 0 15px 30px rgba(79, 70, 229, 0.3);
 }
 
 .translate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+opacity: 0.6;
+cursor: not-allowed;
 }
 
 .translation-loading {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: #64748b;
+height: 100%;
+min-height: 200px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 13px;
+color: #64748b;
+font-size: 14px;
+font-weight: 600;
 }
 
 .spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #4f46e5;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+width: 22px;
+height: 22px;
+border: 3px solid #e2e8f0;
+border-top-color: #4f46e5;
+border-radius: 50%;
+animation: spin 0.8s linear infinite;
 }
 
 .translation-error {
-  margin-top: 15px;
-  padding: 12px 15px;
-  border-radius: 10px;
-  background: #fef2f2;
-  color: #dc2626;
-  font-size: 14px;
+margin-top: 18px;
+padding: 13px 16px;
+border: 1px solid #fecaca;
+border-radius: 12px;
+background: #fef2f2;
+color: #dc2626;
+font-size: 14px;
 }
 
 .translation-note {
-  max-width: 950px;
-  margin: auto;
-  padding: 18px 22px;
-  border-radius: 14px;
-  background: #eef2ff;
+max-width: 1050px;
+margin: 25px auto 0;
+padding: 20px 24px;
+border: 1px solid #c7d2fe;
+border-radius: 18px;
+background: rgba(238, 242, 255, 0.85);
+box-sizing: border-box;
 }
 
 .translation-note strong {
-  color: #4338ca;
+color: #4338ca;
+font-size: 14px;
 }
 
 .translation-note p {
-  margin-top: 5px;
-  color: #64748b;
+margin: 7px 0 0;
+color: #64748b;
+font-size: 14px;
+line-height: 1.6;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+to {
+transform: rotate(360deg);
+}
 }
 
-@media (max-width: 700px) {
-  .translation-boxes {
-    grid-template-columns: 1fr;
-  }
-
-  .language-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .swap-btn {
-    align-self: center;
-  }
-
-  .translation-header h1 {
-    font-size: 34px;
-  }
+@media (max-width: 800px) {
+.translation-page {
+padding: 45px 5%;
 }
 
+.translation-header h1 {
+font-size: 40px;
+}
+
+.translation-boxes {
+grid-template-columns: 1fr;
+}
+}
+
+@media (max-width: 600px) {
+.translation-page {
+padding: 35px 4%;
+}
+
+.translation-header h1 {
+font-size: 34px;
+letter-spacing: -1px;
+}
+
+.translation-header p {
+font-size: 15px;
+}
+
+.translator-card {
+padding: 18px;
+border-radius: 20px;
+}
+
+.language-row {
+grid-template-columns: 1fr;
+gap: 12px;
+}
+
+.swap-btn {
+transform: rotate(90deg);
+}
+
+.swap-btn:hover {
+transform: rotate(270deg);
+}
+
+.text-box {
+min-height: 220px;
+padding: 18px;
+}
+
+.text-box textarea {
+height: 150px;
+font-size: 16px;
+}
+}

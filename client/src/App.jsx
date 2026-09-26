@@ -8,6 +8,9 @@ import Dashboard from "./pages/Dashboard";
 import Translation from "./pages/Translation";
 import VoiceTranslation from "./pages/VoiceTranslation";
 import Learn from "./pages/Learn";
+import AITutor from "./pages/AITutor";
+import OfflineLearning from "./pages/OfflineLearning";
+import Calls from "./pages/Calls";
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
         <Route path="/translation" element={<Translation />} />
         <Route path="/voice" element={<VoiceTranslation />} />
         <Route path="/learn" element={<Learn />} />
+        <Route path="/ai-tutor" element={<AITutor />} />
+        <Route path="/offline-learning" element={<OfflineLearning />} />
+        <Route path="/Calls" element={<Calls />} />
       </Routes>
     </BrowserRouter>
   );

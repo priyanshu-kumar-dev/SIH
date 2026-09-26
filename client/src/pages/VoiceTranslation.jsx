@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useRef, useState } from "react";
 import API from "../services/api";
 import "./VoiceTranslation.css";
 
@@ -12,8 +13,14 @@ const VoiceTranslation = () => {
   const [error, setError] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
 
+  const recognitionRef = useRef(null);
+
+  // -----------------------------------------
+  // SPEECH RECOGNITION
+  // -----------------------------------------
   const startListening = () => {
     setError("");
+    setSpeechText("");
     setTranslatedText("");
 
     const SpeechRecognition =
@@ -27,12 +34,24 @@ const VoiceTranslation = () => {
       return;
     }
 
+    // Prevent multiple recognition instances
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.log("Recognition stop:", err);
+      }
+    }
+
     const recognition = new SpeechRecognition();
 
-    // IMPORTANT:
-    // Speech recognition language depends on SOURCE language.
+    recognitionRef.current = recognition;
+
+    // Source language controls microphone recognition language
     recognition.lang =
-      sourceLanguage === "Hindi" ? "hi-IN" : "en-IN";
+      sourceLanguage === "Hindi"
+        ? "hi-IN"
+        : "en-IN";
 
     recognition.continuous = false;
     recognition.interimResults = false;
@@ -40,14 +59,18 @@ const VoiceTranslation = () => {
 
     recognition.onstart = () => {
       setIsListening(true);
-      setSpeechText("");
+      setError("");
     };
 
     recognition.onresult = (event) => {
       const result =
-        event.results[0][0].transcript;
+        event.results?.[0]?.[0]?.transcript?.trim();
 
-      setSpeechText(result);
+      if (result) {
+        console.log("SPEECH:", result);
+        setSpeechText(result);
+      }
+
       setIsListening(false);
     };
 
@@ -67,6 +90,14 @@ const VoiceTranslation = () => {
         setError(
           "No speech detected. Please speak again."
         );
+      } else if (event.error === "audio-capture") {
+        setError(
+          "Microphone was not found. Please check your microphone."
+        );
+      } else if (event.error === "network") {
+        setError(
+          "Speech recognition network error. Please check your internet."
+        );
       } else {
         setError(
           "Voice recognition failed. Please try again."
@@ -76,13 +107,25 @@ const VoiceTranslation = () => {
 
     recognition.onend = () => {
       setIsListening(false);
+      recognitionRef.current = null;
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error("Recognition start error:", err);
+      setIsListening(false);
+      setError("Could not start microphone. Please try again.");
+    }
   };
 
+  // -----------------------------------------
+  // TRANSLATION
+  // -----------------------------------------
   const translateVoice = async () => {
-    if (!speechText.trim()) {
+    const cleanText = speechText.trim();
+
+    if (!cleanText) {
       setError("Please speak something first.");
       return;
     }
@@ -91,30 +134,60 @@ const VoiceTranslation = () => {
     setIsTranslating(true);
 
     try {
+      // Same language = no API required
+      if (sourceLanguage === targetLanguage) {
+        setTranslatedText(cleanText);
+        setIsTranslating(false);
+        return;
+      }
+
+      console.log("TRANSLATE REQUEST:", {
+        text: cleanText,
+        from: sourceLanguage,
+        to: targetLanguage,
+      });
+
       const response = await API.post(
         "/translation/translate",
         {
-          text: speechText,
+          text: cleanText,
           from: sourceLanguage,
           to: targetLanguage,
         }
       );
 
-      if (response.data?.translation) {
-        setTranslatedText(
-          response.data.translation
-        );
-      } else {
-        setError("Translation result not received.");
-      }
-    } catch (error) {
-      console.error(
-        "Voice translation error:",
-        error
+      console.log(
+        "TRANSLATE RESPONSE:",
+        response.data
       );
 
+      const translation =
+        response.data?.translation;
+
+      if (translation) {
+        setTranslatedText(translation);
+        setError("");
+      } else {
+        setTranslatedText("");
+        setError(
+          "Translation result not received from server."
+        );
+      }
+    } catch (err) {
+      console.error(
+        "VOICE TRANSLATION ERROR:",
+        err
+      );
+
+      console.error(
+        "SERVER RESPONSE:",
+        err.response?.data
+      );
+
+      setTranslatedText("");
+
       setError(
-        error.response?.data?.message ||
+        err.response?.data?.message ||
           "Translation failed. Please try again."
       );
     } finally {
@@ -122,8 +195,12 @@ const VoiceTranslation = () => {
     }
   };
 
+  // -----------------------------------------
+  // TEXT TO SPEECH
+  // -----------------------------------------
   const speakTranslation = () => {
     if (!translatedText.trim()) {
+      setError("There is no translated text to speak.");
       return;
     }
 
@@ -141,37 +218,107 @@ const VoiceTranslation = () => {
         translatedText
       );
 
-    // IMPORTANT:
-    // Speech output depends on TARGET language.
-    if (targetLanguage === "Hindi") {
-      speech.lang = "hi-IN";
-    } else {
-      speech.lang = "en-IN";
-    }
+    // Target language controls voice output
+    speech.lang =
+      targetLanguage === "Hindi"
+        ? "hi-IN"
+        : "en-IN";
 
     speech.rate = 0.9;
     speech.pitch = 1;
+    speech.volume = 1;
+
+    console.log(
+      "TTS LANGUAGE:",
+      speech.lang
+    );
 
     window.speechSynthesis.speak(speech);
   };
 
+  // -----------------------------------------
+  // SWAP LANGUAGES
+  // -----------------------------------------
   const swapLanguages = () => {
     const oldSource = sourceLanguage;
     const oldTarget = targetLanguage;
 
+    const oldSpeech = speechText;
+    const oldTranslation = translatedText;
+
     setSourceLanguage(oldTarget);
     setTargetLanguage(oldSource);
 
-    setSpeechText(translatedText);
-    setTranslatedText(speechText);
+    // Swap displayed text also
+    setSpeechText(oldTranslation);
+    setTranslatedText(oldSpeech);
 
     setError("");
+
+    // Stop current speech
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
+    // Stop microphone
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.log("Recognition stop:", err);
+      }
+
+      recognitionRef.current = null;
+    }
+
+    setIsListening(false);
+  };
+
+  // -----------------------------------------
+  // SOURCE LANGUAGE CHANGE
+  // -----------------------------------------
+  const handleSourceChange = (e) => {
+    const newLanguage = e.target.value;
+
+    setSourceLanguage(newLanguage);
+    setSpeechText("");
+    setTranslatedText("");
+    setError("");
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.log("Recognition stop:", err);
+      }
+
+      recognitionRef.current = null;
+    }
+
+    setIsListening(false);
+  };
+
+  // -----------------------------------------
+  // TARGET LANGUAGE CHANGE
+  // -----------------------------------------
+  const handleTargetChange = (e) => {
+    const newLanguage = e.target.value;
+
+    setTargetLanguage(newLanguage);
+    setTranslatedText("");
+    setError("");
+
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
   };
 
   return (
     <div className="voice-page">
 
+      {/* HEADER */}
       <div className="voice-header">
+
         <span className="voice-badge">
           🎙️ Voice AI
         </span>
@@ -185,22 +332,25 @@ const VoiceTranslation = () => {
           English with AI-powered language
           technology.
         </p>
+
       </div>
 
+      {/* MAIN CARD */}
       <div className="voice-card">
 
+        {/* LANGUAGE SELECTOR */}
         <div className="voice-language-row">
 
+          {/* FROM */}
           <div className="voice-language">
-            <label>From</label>
+
+            <label>
+              From
+            </label>
 
             <select
               value={sourceLanguage}
-              onChange={(e) => {
-                setSourceLanguage(e.target.value);
-                setTranslatedText("");
-                setSpeechText("");
-              }}
+              onChange={handleSourceChange}
             >
               <option value="Hindi">
                 Hindi
@@ -210,24 +360,29 @@ const VoiceTranslation = () => {
                 English
               </option>
             </select>
+
           </div>
 
+          {/* SWAP */}
           <button
             className="voice-swap"
             onClick={swapLanguages}
+            type="button"
+            aria-label="Swap languages"
           >
             ⇄
           </button>
 
+          {/* TO */}
           <div className="voice-language">
-            <label>To</label>
+
+            <label>
+              To
+            </label>
 
             <select
               value={targetLanguage}
-              onChange={(e) => {
-                setTargetLanguage(e.target.value);
-                setTranslatedText("");
-              }}
+              onChange={handleTargetChange}
             >
               <option value="English">
                 English
@@ -237,10 +392,12 @@ const VoiceTranslation = () => {
                 Hindi
               </option>
             </select>
+
           </div>
 
         </div>
 
+        {/* MICROPHONE */}
         <div className="voice-main">
 
           <div
@@ -248,10 +405,22 @@ const VoiceTranslation = () => {
               isListening ? "listening" : ""
             }`}
             onClick={startListening}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (
+                e.key === "Enter" ||
+                e.key === " "
+              ) {
+                startListening();
+              }
+            }}
           >
+
             <div className="mic-circle">
               🎤
             </div>
+
           </div>
 
           <h2>
@@ -261,21 +430,22 @@ const VoiceTranslation = () => {
           </h2>
 
           <p>
-            {isListening
-              ? `Speak in ${sourceLanguage}`
-              : `Speak in ${sourceLanguage}`}
+            Speak in {sourceLanguage}
           </p>
 
         </div>
 
+        {/* ERROR */}
         {error && (
           <div className="voice-error">
             {error}
           </div>
         )}
 
+        {/* RESULTS */}
         <div className="voice-results">
 
+          {/* SPEECH */}
           <div className="voice-result-box">
 
             <div className="result-heading">
@@ -299,6 +469,7 @@ const VoiceTranslation = () => {
 
           </div>
 
+          {/* TRANSLATION */}
           <div className="voice-result-box">
 
             <div className="result-heading">
@@ -324,14 +495,17 @@ const VoiceTranslation = () => {
 
         </div>
 
+        {/* ACTION BUTTONS */}
         <div className="voice-actions">
 
           <button
             className="translate-voice-btn"
             onClick={translateVoice}
             disabled={
-              !speechText || isTranslating
+              !speechText.trim() ||
+              isTranslating
             }
+            type="button"
           >
             {isTranslating
               ? "Translating..."
@@ -341,7 +515,8 @@ const VoiceTranslation = () => {
           <button
             className="speak-btn"
             onClick={speakTranslation}
-            disabled={!translatedText}
+            disabled={!translatedText.trim()}
+            type="button"
           >
             🔊 Listen
           </button>
@@ -350,6 +525,7 @@ const VoiceTranslation = () => {
 
       </div>
 
+      {/* INFO */}
       <div className="voice-info">
 
         <div className="info-item">
