@@ -31,10 +31,6 @@ const Calls = () => {
   const [toLanguage, setToLanguage] = useState("English");
   const [message, setMessage] = useState("");
 
-  /* =========================
-     CREATE ROOM
-  ========================= */
-
   const generateRoomId = () => {
     return (
       "BS-" +
@@ -45,27 +41,32 @@ const Calls = () => {
     );
   };
 
-  /* =========================
-     START CALL
-  ========================= */
+  const openInterviewRoom = (id, type = "video") => {
+    const cleanRoomId = id.trim().toUpperCase();
+
+    if (!cleanRoomId) {
+      setMessage("Please enter an Interview Room ID.");
+      return;
+    }
+
+    setMessage("");
+
+    navigate(
+      `/interview/${encodeURIComponent(
+        cleanRoomId
+      )}?type=${type}&from=${encodeURIComponent(
+        fromLanguage
+      )}&to=${encodeURIComponent(toLanguage)}`
+    );
+  };
 
   const startCall = (type) => {
     const newRoomId = generateRoomId();
 
     setRoomId(newRoomId);
 
-    const callType = type === "video" ? "video" : "voice";
-
-    navigate(
-      `/interview/${newRoomId}?type=${callType}&from=${encodeURIComponent(
-        fromLanguage
-      )}&to=${encodeURIComponent(toLanguage)}`
-    );
+    openInterviewRoom(newRoomId, type);
   };
-
-  /* =========================
-     JOIN ROOM
-  ========================= */
 
   const joinRoom = () => {
     const value = roomId.trim();
@@ -75,39 +76,29 @@ const Calls = () => {
       return;
     }
 
-    navigate(
-      `/interview/${value}?type=video&from=${encodeURIComponent(
-        fromLanguage
-      )}&to=${encodeURIComponent(toLanguage)}`
-    );
+    openInterviewRoom(value, "video");
   };
 
-  /* =========================
-     COPY ROOM LINK
-  ========================= */
-
   const copyRoomLink = async () => {
-    if (!roomId) {
+    if (!roomId.trim()) {
       setMessage("Create an interview room first.");
       return;
     }
 
-    const link = `${window.location.origin}/interview/${roomId}`;
+    const cleanRoomId = roomId.trim().toUpperCase();
+
+    const link = `${window.location.origin}/interview/${encodeURIComponent(
+      cleanRoomId
+    )}`;
 
     try {
       await navigator.clipboard.writeText(link);
-
       setMessage("Interview link copied successfully.");
     } catch (error) {
       console.error("Copy error:", error);
-
       setMessage("Unable to copy the interview link.");
     }
   };
-
-  /* =========================
-     SELECT RECENT USER
-  ========================= */
 
   const selectRecentUser = () => {
     const newRoomId = generateRoomId();
@@ -119,10 +110,6 @@ const Calls = () => {
     );
   };
 
-  /* =========================
-     SWAP LANGUAGES
-  ========================= */
-
   const swapLanguages = () => {
     setFromLanguage(toLanguage);
     setToLanguage(fromLanguage);
@@ -130,10 +117,6 @@ const Calls = () => {
 
   return (
     <div className="calls-page">
-      {/* =========================
-          HEADER
-      ========================= */}
-
       <div className="calls-header">
         <span className="calls-badge">
           📞 BhashaSetu Connect
@@ -152,26 +135,15 @@ const Calls = () => {
       </div>
 
       <div className="call-container">
-        {/* =========================
-            CALL CARD
-        ========================= */}
-
         <div className="call-card">
           <div className="call-card-header">
             <div className="call-icon">📞</div>
 
             <div>
               <h2>Start a Conversation</h2>
-
-              <p>
-                Create or join an interview room
-              </p>
+              <p>Create or join an interview room</p>
             </div>
           </div>
-
-          {/* =========================
-              ROOM SECTION
-          ========================= */}
 
           <div className="user-search">
             <span>🔗</span>
@@ -180,15 +152,17 @@ const Calls = () => {
               type="text"
               value={roomId}
               onChange={(e) => {
-                setRoomId(e.target.value);
+                setRoomId(e.target.value.toUpperCase());
                 setMessage("");
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
+                  e.preventDefault();
                   joinRoom();
                 }
               }}
               placeholder="Enter Interview Room ID"
+              autoComplete="off"
             />
 
             <button
@@ -205,10 +179,6 @@ const Calls = () => {
               {message}
             </div>
           )}
-
-          {/* =========================
-              LANGUAGE SECTION
-          ========================= */}
 
           <div className="language-section">
             <label>Interview Languages</label>
@@ -261,10 +231,6 @@ const Calls = () => {
             </div>
           </div>
 
-          {/* =========================
-              CALL BUTTONS
-          ========================= */}
-
           <div className="call-buttons">
             <button
               type="button"
@@ -282,10 +248,6 @@ const Calls = () => {
               📹 Video Call
             </button>
           </div>
-
-          {/* =========================
-              ROOM LINK
-          ========================= */}
 
           {roomId && (
             <div
@@ -325,10 +287,6 @@ const Calls = () => {
             </div>
           )}
 
-          {/* =========================
-              RECENT INTERVIEWS
-          ========================= */}
-
           <div className="recent-section">
             <h3>Recent Interviews</h3>
 
@@ -343,7 +301,6 @@ const Calls = () => {
 
                 <div className="recent-user-info">
                   <strong>{user.name}</strong>
-
                   <span>{user.contact}</span>
                 </div>
 
@@ -359,10 +316,6 @@ const Calls = () => {
           </div>
         </div>
 
-        {/* =========================
-            TRANSLATION INFO
-        ========================= */}
-
         <div className="call-info-card">
           <h2>🌐 Real-Time Translation</h2>
 
@@ -372,9 +325,7 @@ const Calls = () => {
           </p>
 
           <div className="call-feature">
-            <div className="call-feature-icon">
-              🎤
-            </div>
+            <div className="call-feature-icon">🎤</div>
 
             <div>
               <strong>Speech Recognition</strong>
@@ -387,9 +338,7 @@ const Calls = () => {
           </div>
 
           <div className="call-feature">
-            <div className="call-feature-icon">
-              🧠
-            </div>
+            <div className="call-feature-icon">🧠</div>
 
             <div>
               <strong>AI Translation</strong>
@@ -402,9 +351,7 @@ const Calls = () => {
           </div>
 
           <div className="call-feature">
-            <div className="call-feature-icon">
-              🔊
-            </div>
+            <div className="call-feature-icon">🔊</div>
 
             <div>
               <strong>Translated Voice</strong>
@@ -419,13 +366,9 @@ const Calls = () => {
           <div className="translation-preview">
             <span>Live Translation Preview</span>
 
-            <p>
-              नमस्ते, आप कैसे हैं?
-            </p>
+            <p>नमस्ते, आप कैसे हैं?</p>
 
-            <strong>
-              How are you?
-            </strong>
+            <strong>How are you?</strong>
           </div>
 
           <div className="call-status">
