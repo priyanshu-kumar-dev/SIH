@@ -1,9 +1,9 @@
 import React, { Fragment, useState } from "react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getSignup } from "../../store/User/user-action";
-import "../../css/Login.css";
+// import { getSignup } from "../../store/User/user-action";
+// import "../../css/Login.css";
 
 const Signup = () => {
   const dispatch = useDispatch();

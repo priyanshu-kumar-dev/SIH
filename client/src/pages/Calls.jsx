@@ -1,61 +1,127 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Calls.css";
 
 const recentUsers = [
   {
     id: 1,
     name: "Rahul Sharma",
-    contact: "rahul@example.com",
+    contact: "Interview Room",
     avatar: "RS",
   },
   {
     id: 2,
     name: "Ankit Kumar",
-    contact: "+91 98765 43210",
+    contact: "Interview Room",
     avatar: "AK",
   },
   {
     id: 3,
     name: "Neha Singh",
-    contact: "neha@example.com",
+    contact: "Interview Room",
     avatar: "NS",
   },
 ];
 
 const Calls = () => {
-  const [contact, setContact] = useState("");
+  const navigate = useNavigate();
+
+  const [roomId, setRoomId] = useState("");
   const [fromLanguage, setFromLanguage] = useState("Hindi");
   const [toLanguage, setToLanguage] = useState("English");
   const [message, setMessage] = useState("");
 
-  const searchUser = () => {
-    const value = contact.trim();
+  /* =========================
+     CREATE ROOM
+  ========================= */
 
-    if (!value) {
-      setMessage("Please enter a mobile number or email.");
-      return;
-    }
-
-    setMessage(`Searching for ${value}...`);
-  };
-
-  const startCall = (type) => {
-    if (!contact.trim()) {
-      setMessage("Please enter a mobile number or email first.");
-      return;
-    }
-
-    const callType = type === "video" ? "Video" : "Voice";
-
-    setMessage(
-      `${callType} call request ready for ${contact}.`
+  const generateRoomId = () => {
+    return (
+      "BS-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase()
     );
   };
 
-  const selectRecentUser = (user) => {
-    setContact(user.contact);
-    setMessage("");
+  /* =========================
+     START CALL
+  ========================= */
+
+  const startCall = (type) => {
+    const newRoomId = generateRoomId();
+
+    setRoomId(newRoomId);
+
+    const callType = type === "video" ? "video" : "voice";
+
+    navigate(
+      `/interview/${newRoomId}?type=${callType}&from=${encodeURIComponent(
+        fromLanguage
+      )}&to=${encodeURIComponent(toLanguage)}`
+    );
   };
+
+  /* =========================
+     JOIN ROOM
+  ========================= */
+
+  const joinRoom = () => {
+    const value = roomId.trim();
+
+    if (!value) {
+      setMessage("Please enter an Interview Room ID.");
+      return;
+    }
+
+    navigate(
+      `/interview/${value}?type=video&from=${encodeURIComponent(
+        fromLanguage
+      )}&to=${encodeURIComponent(toLanguage)}`
+    );
+  };
+
+  /* =========================
+     COPY ROOM LINK
+  ========================= */
+
+  const copyRoomLink = async () => {
+    if (!roomId) {
+      setMessage("Create an interview room first.");
+      return;
+    }
+
+    const link = `${window.location.origin}/interview/${roomId}`;
+
+    try {
+      await navigator.clipboard.writeText(link);
+
+      setMessage("Interview link copied successfully.");
+    } catch (error) {
+      console.error("Copy error:", error);
+
+      setMessage("Unable to copy the interview link.");
+    }
+  };
+
+  /* =========================
+     SELECT RECENT USER
+  ========================= */
+
+  const selectRecentUser = () => {
+    const newRoomId = generateRoomId();
+
+    setRoomId(newRoomId);
+
+    setMessage(
+      "Interview room created. Share the room link with the interviewer."
+    );
+  };
+
+  /* =========================
+     SWAP LANGUAGES
+  ========================= */
 
   const swapLanguages = () => {
     setFromLanguage(toLanguage);
@@ -64,6 +130,10 @@ const Calls = () => {
 
   return (
     <div className="calls-page">
+      {/* =========================
+          HEADER
+      ========================= */}
+
       <div className="calls-header">
         <span className="calls-badge">
           📞 BhashaSetu Connect
@@ -76,48 +146,57 @@ const Calls = () => {
         </h1>
 
         <p>
-          Make voice or video calls and communicate across
-          languages with AI-powered real-time translation.
+          Create a secure interview room and communicate
+          through real-time voice or video calls.
         </p>
       </div>
 
       <div className="call-container">
+        {/* =========================
+            CALL CARD
+        ========================= */}
+
         <div className="call-card">
           <div className="call-card-header">
             <div className="call-icon">📞</div>
 
             <div>
               <h2>Start a Conversation</h2>
+
               <p>
-                Connect using a mobile number or email
+                Create or join an interview room
               </p>
             </div>
           </div>
 
+          {/* =========================
+              ROOM SECTION
+          ========================= */}
+
           <div className="user-search">
-            <span>🔎</span>
+            <span>🔗</span>
 
             <input
               type="text"
-              value={contact}
+              value={roomId}
               onChange={(e) => {
-                setContact(e.target.value);
+                setRoomId(e.target.value);
                 setMessage("");
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  searchUser();
+                  joinRoom();
                 }
               }}
-              placeholder="Mobile number or email"
+              placeholder="Enter Interview Room ID"
             />
 
             <button
               type="button"
               className="search-user-btn"
-              onClick={searchUser}
+              onClick={joinRoom}
             >
-              Search
+              Join
             </button>
           </div>
 
@@ -127,8 +206,12 @@ const Calls = () => {
             </div>
           )}
 
+          {/* =========================
+              LANGUAGE SECTION
+          ========================= */}
+
           <div className="language-section">
-            <label>Live Translation Languages</label>
+            <label>Interview Languages</label>
 
             <div className="language-selects">
               <div className="language-box">
@@ -144,6 +227,8 @@ const Calls = () => {
                   <option value="English">English</option>
                   <option value="Bengali">Bengali</option>
                   <option value="Tamil">Tamil</option>
+                  <option value="Chinese">Chinese</option>
+                  <option value="Russian">Russian</option>
                 </select>
               </div>
 
@@ -169,10 +254,16 @@ const Calls = () => {
                   <option value="Hindi">Hindi</option>
                   <option value="Bengali">Bengali</option>
                   <option value="Tamil">Tamil</option>
+                  <option value="Chinese">Chinese</option>
+                  <option value="Russian">Russian</option>
                 </select>
               </div>
             </div>
           </div>
+
+          {/* =========================
+              CALL BUTTONS
+          ========================= */}
 
           <div className="call-buttons">
             <button
@@ -192,8 +283,54 @@ const Calls = () => {
             </button>
           </div>
 
+          {/* =========================
+              ROOM LINK
+          ========================= */}
+
+          {roomId && (
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "15px",
+                borderRadius: "12px",
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+              }}
+            >
+              <strong>Interview Room</strong>
+
+              <p
+                style={{
+                  margin: "8px 0",
+                  fontWeight: "600",
+                }}
+              >
+                {roomId}
+              </p>
+
+              <button
+                type="button"
+                onClick={copyRoomLink}
+                style={{
+                  padding: "9px 14px",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  background: "#2563eb",
+                  color: "#fff",
+                }}
+              >
+                🔗 Copy Interview Link
+              </button>
+            </div>
+          )}
+
+          {/* =========================
+              RECENT INTERVIEWS
+          ========================= */}
+
           <div className="recent-section">
-            <h3>Recent Conversations</h3>
+            <h3>Recent Interviews</h3>
 
             {recentUsers.map((user) => (
               <div
@@ -206,30 +343,32 @@ const Calls = () => {
 
                 <div className="recent-user-info">
                   <strong>{user.name}</strong>
+
                   <span>{user.contact}</span>
                 </div>
 
                 <button
                   type="button"
                   className="recent-call-btn"
-                  onClick={() =>
-                    selectRecentUser(user)
-                  }
+                  onClick={selectRecentUser}
                 >
-                  Call
+                  Create
                 </button>
               </div>
             ))}
           </div>
         </div>
 
+        {/* =========================
+            TRANSLATION INFO
+        ========================= */}
+
         <div className="call-info-card">
           <h2>🌐 Real-Time Translation</h2>
 
           <p>
             Speak naturally in your language. BhashaSetu
-            processes the conversation and translates it
-            in real time.
+            will translate the conversation in real time.
           </p>
 
           <div className="call-feature">
@@ -241,8 +380,8 @@ const Calls = () => {
               <strong>Speech Recognition</strong>
 
               <p>
-                Your voice is converted into text using
-                Speech AI.
+                Your voice can be converted into text
+                using Speech AI.
               </p>
             </div>
           </div>
@@ -256,8 +395,8 @@ const Calls = () => {
               <strong>AI Translation</strong>
 
               <p>
-                NLP and AI translate the conversation
-                between selected languages.
+                AI can translate the conversation between
+                selected languages.
               </p>
             </div>
           </div>
@@ -272,7 +411,7 @@ const Calls = () => {
 
               <p>
                 The translated message can be converted
-                back into natural speech.
+                into natural speech.
               </p>
             </div>
           </div>

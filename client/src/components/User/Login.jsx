@@ -1,12 +1,12 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../css/Login.css";
-import toast from "react-hot-toast";
-import LoadingSpinner from "../LoadingSpinner";
+// import toast from "react-hot-toast";
+// import LoadingSpinner from "../LoadingSpinner";
 
-import { useDispatch, useSelector } from "react-redux";
-import { getLogin } from "../../store/User/user-action";
-import { userActions } from "../../store/User/user-slice";
+// import { useDispatch, useSelector } from "react-redux";
+// import { getLogin } from "../../store/User/user-action";
+// import { userActions } from "../../store/User/user-slice";
 
 const Login = () => {
   const [email, setEmail] = useState("");

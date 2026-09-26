@@ -1,27 +1,28 @@
 const express = require("express");
+const http = require("http");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const connectDB = require("./db/db");
 const translationRoutes = require("./routes/translationRoutes");
-<<<<<<< HEAD
 const aiRoutes = require("./routes/aiRoutes");
 const lessonRoutes = require("./routes/lessonRoutes");
+const authRouter = require("./routes/auth.route");
+
+const setupSignaling = require("./socket/signaling");
 
 const app = express();
 
 /* =========================
-   MIDDLEWARE
+   DATABASE
 ========================= */
-
-app.use(cors());
-=======
-const authRouter = require("./routes/auth.route");
 
 connectDB();
 
-const app = express();
+/* =========================
+   MIDDLEWARE
+========================= */
 
 app.use(
   cors({
@@ -29,12 +30,10 @@ app.use(
     credentials: true,
   })
 );
->>>>>>> 818830660ec9b58b2c38c5f393b7e7ba36c57ee9
 
 app.use(express.json());
-app.use(cookieParser());
-
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 /* =========================
    TEST ROUTE
@@ -47,21 +46,34 @@ app.get("/", (req, res) => {
   });
 });
 
-<<<<<<< HEAD
 /* =========================
    API ROUTES
 ========================= */
 
-// Translation API
-=======
+/*
+  Authentication
+
+  Final routes depend on auth.route.js:
+
+  If auth.route.js contains:
+  router.post("/signup", ...)
+  router.post("/login", ...)
+
+  then:
+  POST /api/auth/user/signup
+  POST /api/auth/user/login
+*/
+
 app.use("/api/auth/user", authRouter);
->>>>>>> 818830660ec9b58b2c38c5f393b7e7ba36c57ee9
+
+/* =========================
+   OTHER API ROUTES
+========================= */
+
 app.use("/api/translation", translationRoutes);
 
-// AI Tutor API
 app.use("/api/ai", aiRoutes);
 
-// Vernacular Learning API
 app.use("/api/lessons", lessonRoutes);
 
 /* =========================
@@ -69,6 +81,8 @@ app.use("/api/lessons", lessonRoutes);
 ========================= */
 
 app.use((req, res) => {
+  console.log("❌ API route not found:", req.method, req.originalUrl);
+
   res.status(404).json({
     success: false,
     message: "API route not found",
@@ -91,22 +105,35 @@ app.use((err, req, res, next) => {
 });
 
 /* =========================
-   SERVER
+   HTTP SERVER
+========================= */
+
+const server = http.createServer(app);
+
+/* =========================
+   WEBRTC / SOCKET.IO
+========================= */
+
+setupSignaling(server);
+
+/* =========================
+   SERVER START
 ========================= */
 
 const PORT = process.env.PORT || 5000;
 
-<<<<<<< HEAD
-app.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log("=================================");
   console.log("🚀 BhashaSetu Server Started");
   console.log(`🌐 http://localhost:${PORT}`);
+  console.log("");
+  console.log("🔐 Auth:");
+  console.log("   POST /api/auth/user/signup");
+  console.log("   POST /api/auth/user/login");
+  console.log("");
   console.log("📚 Lessons API: /api/lessons");
   console.log("🤖 AI Tutor API: /api/ai");
   console.log("🌐 Translation API: /api/translation");
+  console.log("📞 WebRTC Signaling: Socket.IO");
   console.log("=================================");
-=======
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
->>>>>>> 818830660ec9b58b2c38c5f393b7e7ba36c57ee9
 });
