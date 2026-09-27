@@ -28,14 +28,14 @@ const Navbar = () => {
         <Link to="/voice">Voice AI</Link>
 
         <Link to="/offline-learning">Offline</Link>
+
+        <Link to="/Calls" >
+          Communicatation
+        </Link>
       </div>
 
       {/* AUTHENTICATION */}
       <div className="auth-buttons">
-        <Link to="/learn" className="start-btn">
-          Start Learning
-        </Link>
-
         <Link to="/login" className="start-btn login-btn">
           Login
         </Link>

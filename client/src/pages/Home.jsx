@@ -284,7 +284,7 @@ const Home = () => {
           </Link>
 
           <Link
-            to="/offline"
+            to="/offline-learning"
             className="solution-card"
           >
             <div className="solution-icon">

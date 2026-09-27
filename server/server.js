@@ -50,30 +50,16 @@ app.get("/", (req, res) => {
    API ROUTES
 ========================= */
 
-/*
-  Authentication
-
-  Final routes depend on auth.route.js:
-
-  If auth.route.js contains:
-  router.post("/signup", ...)
-  router.post("/login", ...)
-
-  then:
-  POST /api/auth/user/signup
-  POST /api/auth/user/login
-*/
-
+/* Authentication */
 app.use("/api/auth/user", authRouter);
 
-/* =========================
-   OTHER API ROUTES
-========================= */
-
+/* Translation */
 app.use("/api/translation", translationRoutes);
 
+/* AI Tutor */
 app.use("/api/ai", aiRoutes);
 
+/* Lessons */
 app.use("/api/lessons", lessonRoutes);
 
 /* =========================
@@ -95,7 +81,7 @@ app.use((req, res) => {
 ========================= */
 
 app.use((err, req, res, next) => {
-  console.error("SERVER ERROR:", err);
+  console.error("❌ SERVER ERROR:", err);
 
   res.status(500).json({
     success: false,
@@ -114,7 +100,29 @@ const server = http.createServer(app);
    WEBRTC / SOCKET.IO
 ========================= */
 
-setupSignaling(server);
+try {
+  setupSignaling(server);
+  console.log("✅ Socket.IO / WebRTC signaling initialized");
+} catch (error) {
+  console.error("❌ Socket.IO initialization failed:");
+  console.error(error);
+}
+
+/* =========================
+   ENVIRONMENT CHECK
+========================= */
+
+console.log("=================================");
+console.log("🔧 Environment Check");
+console.log(
+  "🤖 GEMINI API KEY:",
+  process.env.GEMINI_API_KEY ? "Loaded" : "Missing"
+);
+console.log(
+  "🔑 OPENAI API KEY:",
+  process.env.OPENAI_API_KEY ? "Loaded" : "Missing"
+);
+console.log("=================================");
 
 /* =========================
    SERVER START
@@ -122,18 +130,43 @@ setupSignaling(server);
 
 const PORT = process.env.PORT || 5000;
 
+server.on("error", (error) => {
+  console.error("❌ SERVER START ERROR:");
+
+  if (error.code === "EADDRINUSE") {
+    console.error(`❌ Port ${PORT} is already in use.`);
+    console.error(
+      `👉 Another server may already be running on http://localhost:${PORT}`
+    );
+  } else {
+    console.error(error);
+  }
+});
+
 server.listen(PORT, "0.0.0.0", () => {
   console.log("=================================");
   console.log("🚀 BhashaSetu Server Started");
   console.log(`🌐 http://localhost:${PORT}`);
   console.log("");
+
   console.log("🔐 Auth:");
   console.log("   POST /api/auth/user/signup");
   console.log("   POST /api/auth/user/login");
   console.log("");
-  console.log("📚 Lessons API: /api/lessons");
-  console.log("🤖 AI Tutor API: /api/ai");
-  console.log("🌐 Translation API: /api/translation");
-  console.log("📞 WebRTC Signaling: Socket.IO");
+
+  console.log("📚 Lessons API:");
+  console.log("   /api/lessons");
+  console.log("");
+
+  console.log("🤖 AI Tutor API:");
+  console.log("   POST /api/ai/ask");
+  console.log("");
+
+  console.log("🌐 Translation API:");
+  console.log("   /api/translation");
+  console.log("");
+
+  console.log("📞 WebRTC Signaling:");
+  console.log("   Socket.IO");
   console.log("=================================");
 });
