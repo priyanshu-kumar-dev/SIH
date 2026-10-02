@@ -36,6 +36,7 @@ function App() {
         <Route path="/interview/:roomId" element={<InterviewRoom />} />
         {/* <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} /> */}
+        <Route path="/voice-call/:roomId" element={<InterviewRoom />} />
       </Routes>
     </BrowserRouter>
   );
