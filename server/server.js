@@ -9,6 +9,7 @@ const translationRoutes = require("./routes/translationRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const lessonRoutes = require("./routes/lessonRoutes");
 const authRouter = require("./routes/auth.route");
+const errorHandler = require("./middleware/errorHandler");
 
 const setupSignaling = require("./socket/signaling");
 
@@ -67,7 +68,7 @@ app.use("/api/lessons", lessonRoutes);
 ========================= */
 
 app.use((req, res) => {
-  console.log("❌ API route not found:", req.method, req.originalUrl);
+  console.log(" API route not found:", req.method, req.originalUrl);
 
   res.status(404).json({
     success: false,
@@ -80,15 +81,7 @@ app.use((req, res) => {
    ERROR HANDLER
 ========================= */
 
-app.use((err, req, res, next) => {
-  console.error("❌ SERVER ERROR:", err);
-
-  res.status(500).json({
-    success: false,
-    message: "Internal server error",
-    error: err.message,
-  });
-});
+app.use(errorHandler);
 
 /* =========================
    HTTP SERVER
