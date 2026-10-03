@@ -1,150 +1,79 @@
-import React, { Fragment, useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../../css/Login.css";
-// import toast from "react-hot-toast";
-// import LoadingSpinner from "../LoadingSpinner";
-
-// import { useDispatch, useSelector } from "react-redux";
-// import { getLogin } from "../../store/User/user-action";
-// import { userActions } from "../../store/User/user-slice";
+import API from "../../services/api";
+import "./Auth.css";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const submitHandler = async (event) => {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
 
-  const {
-    isAuthenticated,
-    errors,
-    loading,
-  } = useSelector((state) => state.user);
-
-  const submitHandler = (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      toast.error("Please enter email and password");
-      return;
+    try {
+      await API.post("/auth/user/login", { email, password });
+      navigate("/dashboard");
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          requestError.message ||
+          "Login failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    dispatch(
-      getLogin({
-        email,
-        password,
-      })
-    );
   };
 
-  useEffect(() => {
-    if (errors) {
-      toast.error(errors);
-      dispatch(userActions.clearErrors());
-    }
-
-    if (isAuthenticated) {
-      toast.success("User logged successfully");
-      navigate("/");
-    }
-  }, [dispatch, isAuthenticated, errors, navigate]);
-
   return (
-    <Fragment>
-      <div className="row wrapper">
-        {loading && <LoadingSpinner />}
+    <main className="auth-page">
+      <form className="auth-card" onSubmit={submitHandler}>
+        <h1>Welcome back</h1>
+        <p className="auth-description">Log in to continue to BhashaSetu.</p>
 
-        {!loading && (
-          <div className="col-10 col-lg-5">
-            <form onSubmit={submitHandler}>
-              <h1 className="mb-3">Login</h1>
-
-              {/* Email */}
-              <div className="form-group">
-                <label htmlFor="email_field">Email</label>
-
-                <input
-                  type="email"
-                  id="email_field"
-                  className="form-control"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* Password */}
-              <div className="form-group">
-                <label htmlFor="password_field">Password</label>
-
-                <input
-                  type="password"
-                  id="password_field"
-                  className="form-control"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* Forgot Password */}
-              <Link
-                to="/user/forgotPassword"
-                className="float-right mb-4"
-              >
-                Forgot Password?
-              </Link>
-
-              {/* Login Button */}
-              <button
-                id="login_button"
-                type="submit"
-                className="loginbutton btn-block py-3"
-                disabled={loading}
-              >
-                {loading ? "LOGGING IN..." : "LOGIN"}
-              </button>
-
-              {/* Divider */}
-              <div className="d-flex align-items-center my-3">
-                <hr className="flex-grow-1" />
-
-                <span className="mx-2 text-muted">
-                  OR
-                </span>
-
-                <hr className="flex-grow-1" />
-              </div>
-
-              {/* Google Login */}
-              <div className="d-flex justify-content-center">
-                <button
-                  type="button"
-                  className="btn btn-outline-danger"
-                  onClick={() =>
-                    toast.error(
-                      "Google login is temporarily unavailable"
-                    )
-                  }
-                >
-                  Continue with Google
-                </button>
-              </div>
-
-              {/* Signup */}
-              <Link
-                to="/signup"
-                className="float-right mt-3"
-              >
-                New User?
-              </Link>
-            </form>
-          </div>
+        {error && (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
         )}
-      </div>
-    </Fragment>
+
+        <label htmlFor="login-email">Email</label>
+        <input
+          id="login-email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+        />
+
+        <label htmlFor="login-password">Password</label>
+        <input
+          id="login-password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          required
+        />
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Log in"}
+        </button>
+
+        <p className="auth-switch">
+          Don&apos;t have an account? <Link to="/signup">Sign up</Link>
+        </p>
+      </form>
+    </main>
   );
 };
 

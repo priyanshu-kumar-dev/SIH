@@ -1,12 +1,9 @@
-import React, { Fragment, useState } from "react";
-// import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-// import { getSignup } from "../../store/User/user-action";
-// import "../../css/Login.css";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import API from "../../services/api";
+import "./Auth.css";
 
 const Signup = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [user, setUser] = useState({
     name: "",
@@ -15,104 +12,124 @@ const Signup = () => {
     passwordConfirm: "",
     phoneNumber: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const { name, email, password, passwordConfirm, phoneNumber } = user;
+  const onChange = (event) => {
+    setUser((currentUser) => ({
+      ...currentUser,
+      [event.target.name]: event.target.value,
+    }));
+  };
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const submitHandler = async (event) => {
+    event.preventDefault();
+    setError("");
 
-    if (password !== passwordConfirm) {
-      toast.error("Passwords do not match");
+    if (user.password !== user.passwordConfirm) {
+      setError("Passwords do not match.");
       return;
     }
 
-    await dispatch(getSignup(user));
-    toast.success("User registered successfully");
-    navigate("/");
-  };
-
-  const onChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setLoading(true);
+    try {
+      await API.post("/auth/user/signup", user);
+      navigate("/login");
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          requestError.message ||
+          "Registration failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Fragment>
-      <div className="row wrapper ">
-        <form
-          onSubmit={submitHandler}
-          encType="multipart/form-data"
-          className="col-10 col-lg-5"
-        >
-          <h1 className="mb-3">Register</h1>
-          <div className="form-group">
-            <label htmlFor="name_field">Name</label>
-            <input
-              type="text"
-              id="name_field"
-              className="form-control"
-              name="name"
-              value={name}
-              onChange={onChange}
-            />
-          </div>
+    <main className="auth-page">
+      <form className="auth-card" onSubmit={submitHandler}>
+        <h1>Create your account</h1>
+        <p className="auth-description">Join BhashaSetu and get started.</p>
 
-          <div className="form-group">
-            <label htmlFor="email_field">Email</label>
-            <input
-              type="email"
-              id="email_field"
-              className="form-control"
-              name="email"
-              value={email}
-              onChange={onChange}
-            />
-          </div>
+        {error && (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        )}
 
-          <div className="form-group">
-            <label htmlFor="password_field">Password</label>
-            <input
-              type="password"
-              id="password_field"
-              className="form-control"
-              name="password"
-              value={password}
-              onChange={onChange}
-            />
-          </div>
+        <label htmlFor="signup-name">Name</label>
+        <input
+          id="signup-name"
+          name="name"
+          type="text"
+          autoComplete="name"
+          placeholder="Your name"
+          value={user.name}
+          onChange={onChange}
+          maxLength={50}
+          required
+        />
 
-          <div className="form-group">
-            <label htmlFor="passwordConfirm_field">Confirm Password</label>
-            <input
-              type="password"
-              id="passwordConfirm_field"
-              className="form-control"
-              name="passwordConfirm"
-              value={passwordConfirm}
-              onChange={onChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="phoneNumber_field">Phone Number</label>
-            <input
-              type="text"
-              id="phoneNumber_field"
-              className="form-control"
-              name="phoneNumber"
-              value={phoneNumber}
-              onChange={onChange}
-            />
-          </div>
+        <label htmlFor="signup-email">Email</label>
+        <input
+          id="signup-email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={user.email}
+          onChange={onChange}
+          required
+        />
 
-          <button
-            id="register_button"
-            type="submit"
-            className="loginbutton btn-block py-3"
-          >
-            REGISTER
-          </button>
-        </form>
-      </div>
-    </Fragment>
+        <label htmlFor="signup-phone">Phone number</label>
+        <input
+          id="signup-phone"
+          name="phoneNumber"
+          type="tel"
+          autoComplete="tel"
+          placeholder="Your phone number"
+          value={user.phoneNumber}
+          onChange={onChange}
+          required
+        />
+
+        <label htmlFor="signup-password">Password</label>
+        <input
+          id="signup-password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          placeholder="At least 6 characters"
+          value={user.password}
+          onChange={onChange}
+          minLength={6}
+          required
+        />
+
+        <label htmlFor="signup-confirm-password">Confirm password</label>
+        <input
+          id="signup-confirm-password"
+          name="passwordConfirm"
+          type="password"
+          autoComplete="new-password"
+          placeholder="Re-enter your password"
+          value={user.passwordConfirm}
+          onChange={onChange}
+          minLength={6}
+          required
+        />
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating account..." : "Sign up"}
+        </button>
+
+        <p className="auth-switch">
+          Already have an account? <Link to="/login">Log in</Link>
+        </p>
+      </form>
+    </main>
   );
 };
 
