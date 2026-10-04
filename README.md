@@ -138,7 +138,7 @@ You can then add them to this README:
 
 ## 👨‍💻 Author
 
-**Your Name**
+**Your Name** Priyanshu Kumar
 
 GitHub: [@your-username](https://github.com/your-username)
 
