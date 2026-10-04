@@ -96,7 +96,6 @@ npm run preview
 Run the linting command:
 
 ```bash
-
 npm run lint
 
 ```
