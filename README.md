@@ -140,7 +140,7 @@ You can then add them to this README:
 
 **Your Name** Priyanshu Kumar
 
-GitHub: [@your-username]([https://github.com/your-username](https://github.com/priyanshu-kumar-dev))
+GitHub: https://github.com/priyanshu-kumar-dev
 
 ## 📄 License
 
